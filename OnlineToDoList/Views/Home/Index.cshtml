@@ -1,0 +1,58 @@
+﻿@model NewToDoItem
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (User.Identity!.IsAuthenticated)
+{
+    <div class="col-md-8 col-lg-5">
+        <form method="post">
+            <div class="container text-center">
+                <h1>Adding To Do Item</h1>
+            </div>
+            <div class="d-flex align-items-baseline">
+                <label asp-for="Title" class="me-2">Title:</label>
+                <input asp-for="Title" class="form-control me-2" type="text" placeholder="What are you going to do?" />
+                <button class="btn btn-primary">Add</button>
+            </div>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </form>
+
+        <div>
+            @foreach (var item in Model!.ToDoItems!)
+            {
+                <div class="d-flex align-items-center my-3">
+                    <input class="me-2" style="width:1.25em; height:1.25em" type="checkbox" data-done-id="@item.Id" @(item.Done ? "checked" : "") />
+                    <span class="me-auto">@item.Title</span>
+                    <form asp-action="Delete">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-sm btn-danger">&times;</button>
+                    </form>
+                </div>
+            }
+        </div>
+        <form id="frmSwap" asp-action="SwapDone">
+            <input type="hidden" name="id" id="hdnSwapId" />
+        </form>
+    </div>
+
+}
+else
+{
+    <div class="container text-center">
+        <h1>Welcome</h1>
+        <p>First, to login for adding To Do Items.</p>
+        <h4><a asp-area="Identity" asp-page="/Account/Login">Sign In</a></h4>
+    </div>
+
+}
+
+@section Scripts {
+    <script>
+        $("[data-done-id]").change(function () {
+            let id = $(this).data("done-id");
+            $("#hdnSwapId").val(id);
+            $("#frmSwap").submit();
+        });
+    </script>
+}
